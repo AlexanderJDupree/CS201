@@ -142,7 +142,7 @@ void show_bits16(uint32_t num)
 {
     for (int i = 15; i >= 0; --i)
     {
-        printf("%i", (num & 1 << i) > 0);
+        printf("%i", (num >> i) & 1);
     }
     printf("\n");
     return;
