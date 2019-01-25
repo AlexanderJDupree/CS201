@@ -1,1 +1,9 @@
 demo/
+
+homework/bittool/bittool
+homework/prtest/prtest
+
+*.o
+
+*.swp
+
