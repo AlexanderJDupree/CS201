@@ -32,8 +32,8 @@ const char* get_file_name(int argc, char** argv);
 // DEALLOCATION
 char* read_file(FILE* file);
 
-// Returns a random char in range 'a' - 'z'
-char random_char();
+// Returns a random int in the range (min, max) inclusive
+int random_int(int min, int max);
 
 int main(int argc, char** argv)
 {
@@ -114,12 +114,11 @@ char* read_file(FILE* file)
     return NULL;
 }
 
-char random_char()
+int random_int(int min, int max)
 {
     // PID is unique to this process, so this seed can get moved to a higher
     // scope to ensure other calls to random are already seeded
     srandom(getpid());
 
-    return 'a' + random() % 26;
+    return min + random() % (max - min);
 }
-

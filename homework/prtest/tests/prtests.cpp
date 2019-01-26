@@ -54,7 +54,7 @@ TEST_CASE("Generate a random english character")
     const char MIN = 'a';
     const char MAX = 'z';
 
-    const char test = random_char();
+    const char test = random_int('a', 'z');
     bool assertion = test >= MIN && test <= MAX;
 
     REQUIRE(assertion);
