@@ -60,4 +60,8 @@ TEST_CASE("Generate a random english character")
     REQUIRE(assertion);
 }
 
+TEST_CASE("Using Timer to get length of time in ms")
+{
+    
+}
 
