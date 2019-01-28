@@ -26,7 +26,7 @@ void display_with_error(const char* text);
 // Returns size of file in bytes. Return -1 if file is NULL
 long int file_size(FILE* file);
 
-// Returns argv[1] or default file name
+// Returns argv[1] or DEFAULT_FILE name
 const char* get_file_name(int argc, char** argv);
 
 // Reads the entire file into an ALLOCATED char buffer. Caller is responsible
@@ -169,7 +169,7 @@ char* read_file(FILE* file)
         int i = 0;
         while( i < size && (*(contents + i++) = fgetc(file)) != EOF)
 
-        *(contents + i) = '\0'; // Add null termination to the end of string
+        *(contents + i) = '\0'; // Add null terminator to the end of string
 
         return contents;
     }
@@ -251,7 +251,7 @@ int get_input_and_score(int* score)
 
     gettimeofday(&end, NULL);
 
-    // Composes two units seconds and microseconds into time elapsed in ms
+    // Composes two units, seconds and microseconds, into time elapsed in ms
     *score = ((end.tv_sec - start.tv_sec) * 1000) + 
              ((end.tv_usec - start.tv_usec) / 1000);
     
