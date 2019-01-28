@@ -9,9 +9,8 @@
  *
  */
 
-#define DEBUG 1
+#define UNIT_TESTS 1
 
-#include <string.h>
 #include <catch.hpp>
 
 #include "../prtest.c"
@@ -49,6 +48,14 @@ TEST_CASE("Reading a file into a char buffer")
     }
 }
 
+TEST_CASE("Generating random integers")
+{
+    SECTION("Invalid range")
+    {
+        REQUIRE(random_int(1, 0) == 0);
+    }
+}
+
 TEST_CASE("Generate a random english character")
 {
     const char MIN = 'a';
@@ -58,10 +65,5 @@ TEST_CASE("Generate a random english character")
     bool assertion = test >= MIN && test <= MAX;
 
     REQUIRE(assertion);
-}
-
-TEST_CASE("Using Timer to get length of time in ms")
-{
-    
 }
 
