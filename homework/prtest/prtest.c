@@ -162,7 +162,8 @@ char* read_file(FILE* file)
     {
         int size = file_size(file);
 
-        char* contents = (char*) malloc(size + 1 * sizeof(char));
+        char* contents = (char*) malloc((size + 1) * sizeof(char));
+        // TODO Add null pointer check and function that can crash program
 
         // grab character from stream, store it into contents. Ensure it isn't
         // EOF char and ensure we don't write past the buffer size
