@@ -13,9 +13,10 @@
 
 #include <catch.hpp>
 
-#include "timer.h"
-#include "../prtest.c"
-
+extern "C" {
+    #include "timer.h"
+    #include "../prtest.c"
+}
 
 TEST_CASE("Determining a file size in bytes")
 {
@@ -74,7 +75,7 @@ TEST_CASE("Using timer to record elapsed time")
     {
         Timer* timer = construct_timer();
 
-        REQUIRE(elapsed_time(timer) == 0);
+        REQUIRE(get_elapsed_time(timer, SECONDS) == 0);
 
         free(timer);
     }

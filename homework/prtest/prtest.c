@@ -14,7 +14,8 @@
 #include <stdlib.h>   // NULL, malloc()
 #include <unistd.h>   // getpid()
 #include <string.h>   // strlen
-#include <sys/time.h> // gettimeofday()
+
+#include "timer.h"
 
 #define DEFAULT_FILE "test.txt"
 
@@ -44,18 +45,14 @@ int display_text(const char* text);
 
 void display_instructions();
 
-// Returns input as 0, 1, or 2. Writes score as elapsed time in ms into score
-int get_input_and_score(int* score);
+// Returns input as 0 for 'y' 1 for 'n' and anything else as 2
+int get_input();
 
 // Displays success/failure message and accumulated score
 void display_score(int score, int state);
 
 // Hides main from the unit tests build
-#ifdef UNIT_TESTS
-#define DEBUG_TEST 1
-#else
-#define DEBUG_TEST 0
-
+#ifndef UNIT_TESTS
 int main(int argc, char** argv)
 {
     // Seeds the generator with the unique process ID. This is done in main to 
@@ -85,7 +82,6 @@ int main(int argc, char** argv)
 
     return exit_status;
 }
-
 #endif
 
 void usage()
@@ -198,7 +194,11 @@ int run_game(const char* text, int rounds)
         // State is either 0 (No errors in text) or 1 (displayed with error)
         state = display_text(text);
 
-        input = get_input_and_score(&score);
+        timer_start();
+        input = get_input();
+        timer_stop();
+
+        score = elapsed_time(MILLISECONDS);
 
         if(input > 1) // User quit
         {
@@ -237,25 +237,15 @@ void display_instructions()
     return;
 }
 
-int get_input_and_score(int* score)
+int get_input()
 {
     int input = 0;
 
-    struct timeval start, end;
-
     display_instructions();
-
-    gettimeofday(&start, NULL);
 
     // Ensures input is not a newline of EOF char
     while((input = getchar()) == '\n' || input == EOF);
 
-    gettimeofday(&end, NULL);
-
-    // Composes two units, seconds and microseconds, into time elapsed in ms
-    *score = ((end.tv_sec - start.tv_sec) * 1000) + 
-             ((end.tv_usec - start.tv_usec) / 1000);
-    
     switch(input)
     {
         case 'y' : return 0;

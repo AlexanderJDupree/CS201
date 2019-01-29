@@ -12,7 +12,7 @@
 #ifndef TIMER_H
 #define TIMER_H
 
-typedef long (*Converter)(long seconds);
+typedef double (*Converter)(double seconds);
 
 enum time_units
 {
@@ -26,26 +26,26 @@ struct Timer;
 // Constructor returns a new malloc'ed Timer. Caller is responsible for deallocation
 struct Timer* construct_timer();
 
-/* Timer functions without a Timer* parameter use the GLOBAL_TIMER instance */
+/* Functions without a Timer* parameter use the GLOBAL_TIMER */
 
 // Returns 1 on success, 0 for failure.
 int timer_start();
-int timer_start(struct Timer* timer);
+int start(struct Timer* timer);
 
 // Returns 1 on success, 0 for failure.
 int timer_stop();
-int timer_stop(struct Timer* timer);
+int stop(struct Timer* timer);
 
 // Returns elapsed time in ms.
-long elapsed_time(enum time_units = MILLISECONDS);
-long elapsed_time(struct Timer* timer, enum time_units = MILLISECONDS);
+long elapsed_time(enum time_units);
+long get_elapsed_time(struct Timer*, enum time_units);
 
 /****** UNIT CONVERSIONS ******/
 
 // s = seconds, ms = milliseconds, us = microseconds
-long stoms(long seconds);
-long stous(long seconds);
-long stos(long seconds);
+double stoms(double seconds);
+double stous(double seconds);
+double stos(double seconds);
 
 // double is used to preserve the precision through the conversion
 double ustos(double microseconds);

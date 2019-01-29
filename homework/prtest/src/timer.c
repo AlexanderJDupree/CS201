@@ -21,7 +21,7 @@ struct Timer
 
 struct Timer* construct_timer()
 {
-    Timer* new_timer = (Timer*) malloc(sizeof(Timer));
+    struct Timer* new_timer = (struct Timer*) malloc(sizeof(struct Timer));
 
     new_timer->start.tv_sec  = 0;
     new_timer->start.tv_usec = 0;
@@ -36,7 +36,7 @@ int timer_start()
     return gettimeofday(&GLOBAL_TIMER.start, NULL) == 0;
 }
 
-int timer_start(struct Timer* timer)
+int start(struct Timer* timer)
 {
     return gettimeofday(&(timer->start), NULL) == 0;
 }
@@ -46,17 +46,17 @@ int timer_stop()
     return gettimeofday(&GLOBAL_TIMER.stop, NULL) == 0;
 }
 
-int timer_stop(struct Timer* timer)
+int stop(struct Timer* timer)
 {
     return gettimeofday(&(timer->stop), NULL) == 0;
 }
 
 long elapsed_time(enum time_units desired_units)
 {
-    return elapsed_time(&GLOBAL_TIMER, desired_units);
+    return get_elapsed_time(&GLOBAL_TIMER, desired_units);
 }
 
-long elapsed_time(struct Timer* timer, enum time_units desired_units)
+long get_elapsed_time(struct Timer* timer, enum time_units desired_units)
 {
     Converter converter = get_conversion(desired_units);
 
@@ -70,15 +70,15 @@ long elapsed_time(struct Timer* timer, enum time_units desired_units)
 // the magic numbers into global constants or some sort of define
 
 // s = seconds, ms = milliseconds, us = microseconds
-long stoms(long seconds)
+double stoms(double seconds)
 {
     return seconds * 1000;
 }
-long stous(long seconds)
+double stous(double seconds)
 {
     return seconds * 1000000;
 }
-long stos(long seconds)
+double stos(double seconds)
 {
     return seconds;
 }
