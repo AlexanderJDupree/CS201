@@ -1,5 +1,5 @@
 /*
- * File: timer.h
+ * File: timer.c
  *
  * Brief:
  *
