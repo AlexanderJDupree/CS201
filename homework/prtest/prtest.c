@@ -9,12 +9,12 @@
  *
  */
 
-#include <ctype.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <unistd.h>
-#include <string.h>
-#include <sys/time.h>
+#include <ctype.h>    // islower()
+#include <stdio.h>    // printf() getchar()
+#include <stdlib.h>   // NULL, malloc()
+#include <unistd.h>   // getpid()
+#include <string.h>   // strlen
+#include <sys/time.h> // gettimeofday()
 
 #define DEFAULT_FILE "test.txt"
 
@@ -102,22 +102,22 @@ void display_with_error(const char* text)
     // of the text was already ascertained during allocation
     int length = strlen(text);
 
-    int random_index = 0;
-    char random_char = '\0';
+    int replacement_index = 0;
+    char replacement_char = '\0';
 
     // Ensures a lower case character will be replaced
-    while(!islower(text[random_index = random_int(0, length)]));
+    while(!islower(text[replacement_index = random_int(0, length)]));
 
     // Ensures the random_char isn't the same as the one its replacing
-    while(text[random_index] == (random_char = random_int('a', 'z')));
+    while(text[replacement_index] == (replacement_char = random_int('a', 'z')));
 
     int i = 0;
-    for(; i < random_index; ++i)
+    for(; i < replacement_index; ++i)
     {
         printf("%c", text[i]);
     }
 
-    printf("%c", random_char);
+    printf("%c", replacement_char);
 
     for(++i; i < length; ++i)
     {
