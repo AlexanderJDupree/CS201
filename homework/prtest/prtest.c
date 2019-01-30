@@ -23,7 +23,7 @@ void usage();
 
 // Displays the text with a random lower case character modified, returns index
 // of modified character
-int display_with_error(const char* text);
+int display_with_error(const char* text, int length);
 
 // Returns argv[1] or DEFAULT_FILE name
 const char* get_file_name(int argc, char** argv);
@@ -32,10 +32,10 @@ const char* get_file_name(int argc, char** argv);
 int random_int(int min, int max);
 
 // Runs the game for N rounds and prints the result of the game and each round
-int run_game(const char* text, int rounds);
+int run_game(const char* text, int length, int rounds);
 
 // 50% chance to display_with_error and return 1. Else print w/out error return 0
-int display_text(const char* text);
+int display_text(const char* text, int length);
 
 void display_instructions();
 
@@ -62,7 +62,7 @@ int main(int argc, char** argv)
     // contents can be NULL if the file was empty
     if(reader && reader->contents)
     {
-        exit_status = run_game(reader->contents, ROUNDS);
+        exit_status = run_game(reader->contents, reader->size, ROUNDS);
     }
     else
     {
@@ -84,12 +84,8 @@ void usage()
     return;
 }
 
-int display_with_error(const char* text)
+int display_with_error(const char* text, int length)
 {
-    // Refactor so length is a parameter. strlen is O(n) function and the length
-    // of the text was already ascertained during allocation
-    int length = strlen(text);
-
     int replacement_index = 0;
     char replacement_char = '\0';
 
@@ -133,7 +129,7 @@ int random_int(int min, int max)
     return (max - min == -1) ? 0 : min + random() % (max - min + 1);
 }
 
-int run_game(const char* text, int rounds)
+int run_game(const char* text, int length, int rounds)
 {
     int total_score = 0;
     int state = 0;
@@ -145,7 +141,7 @@ int run_game(const char* text, int rounds)
         int score = 0;
 
         // State is either 0 (No errors in text) or 1 (displayed with error)
-        state = display_text(text);
+        state = display_text(text, length);
 
         timer_start();
         input = get_input();
@@ -167,13 +163,13 @@ int run_game(const char* text, int rounds)
     return 0;
 }
 
-int display_text(const char* text)
+int display_text(const char* text, int length)
 {
     int state = random_int(0, 1);
 
     printf("\n");
 
-    (state) ? display_with_error(text) : printf("%s", text);
+    (state) ? display_with_error(text, length) : printf("%s", text);
     return state;
 }
 
