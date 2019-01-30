@@ -33,7 +33,7 @@ struct Timer* construct_timer()
 
 int timer_start()
 {
-    return gettimeofday(&GLOBAL_TIMER.start, NULL) == 0;
+    return start(&GLOBAL_TIMER);
 }
 
 int start(struct Timer* timer)
@@ -43,7 +43,7 @@ int start(struct Timer* timer)
 
 int timer_stop()
 {
-    return gettimeofday(&GLOBAL_TIMER.stop, NULL) == 0;
+    return stop(&GLOBAL_TIMER);
 }
 
 int stop(struct Timer* timer)

@@ -21,8 +21,9 @@
 
 void usage();
 
-// Displays the text with a random lower case character modified
-void display_with_error(const char* text);
+// Displays the text with a random lower case character modified, returns index
+// of modified character
+int display_with_error(const char* text);
 
 // Returns argv[1] or DEFAULT_FILE name
 const char* get_file_name(int argc, char** argv);
@@ -83,7 +84,7 @@ void usage()
     return;
 }
 
-void display_with_error(const char* text)
+int display_with_error(const char* text)
 {
     // Refactor so length is a parameter. strlen is O(n) function and the length
     // of the text was already ascertained during allocation
@@ -110,7 +111,7 @@ void display_with_error(const char* text)
     {
         printf("%c", text[i]);
     }
-    return;
+    return replacement_index;
 }
 
 const char* get_file_name(int argc, char** argv)
@@ -157,7 +158,7 @@ int run_game(const char* text, int rounds)
             return input;
         }
 
-        // If the user answered incorrectly add 5000 to score and display.
+        // If the user answered incorrectly add 5000 to score then display.
         (state = (state == input)) ? display_score(score, state) 
                                    : display_score(score += 5000, state);
         total_score += score;
@@ -168,17 +169,11 @@ int run_game(const char* text, int rounds)
 
 int display_text(const char* text)
 {
-    int state = 0;
+    int state = random_int(0, 1);
 
     printf("\n");
-    if ((state = random_int(0, 1)))
-    {
-        display_with_error(text);
-    }
-    else
-    {
-        printf("%s", text);
-    }
+
+    (state) ? display_with_error(text) : printf("%s", text);
     return state;
 }
 
