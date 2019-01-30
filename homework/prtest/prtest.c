@@ -9,13 +9,13 @@
  *
  */
 
+#include <stdlib.h>   // srandom()
 #include <ctype.h>    // islower()
-#include <stdio.h>    // printf() getchar()
-#include <stdlib.h>   // NULL, malloc()
 #include <unistd.h>   // getpid()
 #include <string.h>   // strlen
 
 #include "timer.h"
+#include "file_reader.h"
 
 #define DEFAULT_FILE "test.txt"
 
@@ -24,15 +24,8 @@ void usage();
 // Displays the text with a random lower case character modified
 void display_with_error(const char* text);
 
-// Returns size of file in bytes. Return -1 if file is NULL
-long int file_size(FILE* file);
-
 // Returns argv[1] or DEFAULT_FILE name
 const char* get_file_name(int argc, char** argv);
-
-// Reads the entire file into an ALLOCATED char buffer. Caller is responsible
-// DEALLOCATION
-char* read_file(FILE* file);
 
 // Returns a random int in the range (min, max) inclusive
 int random_int(int min, int max);
@@ -40,7 +33,7 @@ int random_int(int min, int max);
 // Runs the game for N rounds and prints the result of the game and each round
 int run_game(const char* text, int rounds);
 
-// 50% chance to display_with_error and return 1. Else print and return 0
+// 50% chance to display_with_error and return 1. Else print w/out error return 0
 int display_text(const char* text);
 
 void display_instructions();
@@ -59,18 +52,16 @@ int main(int argc, char** argv)
     // ensure the generator is seeded once and available for all subsequent calls
     srandom(getpid()); 
 
+    int exit_status = 0;
     const int ROUNDS = 3;
 
-    int exit_status = 0;
+    struct File_Reader* reader = open_file(get_file_name(argc, argv));
 
-    FILE* file = fopen(get_file_name(argc, argv), "r");
-
-    char* file_contents = read_file(file);
-    
-    if(file_contents)
+    // reader can be NULL if open_file fails
+    // contents can be NULL if the file was empty
+    if(reader && reader->contents)
     {
-        exit_status = run_game(file_contents, ROUNDS);
-        fclose(file);
+        exit_status = run_game(reader->contents, ROUNDS);
     }
     else
     {
@@ -78,7 +69,7 @@ int main(int argc, char** argv)
         exit_status = -1;
     }
 
-    free(file_contents);
+    close_reader(reader);
 
     return exit_status;
 }
@@ -87,8 +78,8 @@ int main(int argc, char** argv)
 void usage()
 {
     fprintf(stderr, "prtest: usage: prtest [<path to file>]\n"
-            "Default file is: '%s' ensure default file exists and is in this"
-            " directory)\n", DEFAULT_FILE);
+            "\nDefault file ('%s') does not exist in this directory or supplied"
+            " file was empty\n", DEFAULT_FILE);
     return;
 }
 
@@ -122,23 +113,6 @@ void display_with_error(const char* text)
     return;
 }
 
-long int file_size(FILE* file)
-{
-    // ftell returns a long int, thus long int is used here as well
-    long int size = -1;
-
-    if(file)
-    {
-        fseek(file, 0L, SEEK_END);
-
-        size = ftell(file);
-
-        fseek(file, 0L, SEEK_SET);
-    }
-	
-    return size;
-}
-
 const char* get_file_name(int argc, char** argv)
 {
     if(argc == 2) // User supplied a file name
@@ -150,28 +124,6 @@ const char* get_file_name(int argc, char** argv)
         return DEFAULT_FILE;
     }
     return NULL; // User entered too many args, program fails
-}
-
-char* read_file(FILE* file)
-{
-    if(file)
-    {
-        int size = file_size(file);
-
-        char* contents = (char*) malloc((size + 1) * sizeof(char));
-        // TODO Add null pointer check and function that can crash program
-
-        // grab character from stream, store it into contents. Ensure it isn't
-        // EOF char and ensure we don't write past the buffer size
-        int i = 0;
-        while( i < size && (*(contents + i++) = fgetc(file)) != EOF)
-
-        *(contents + i) = '\0'; // Add null terminator to the end of string
-
-        return contents;
-    }
-
-    return NULL;
 }
 
 int random_int(int min, int max)

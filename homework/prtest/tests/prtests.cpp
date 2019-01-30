@@ -11,45 +11,55 @@
 
 #define UNIT_TESTS 1
 
+#include <string.h>
 #include <catch.hpp>
 
 extern "C" {
     #include "timer.h"
-    #include "../prtest.c"
+    #include "file_reader.h"
 }
 
 TEST_CASE("Determining a file size in bytes")
 {
-    FILE* test = fopen("test.txt", "r");
-    FILE* invalid_file = NULL;
+    struct File_Reader* reader = open_file("test.txt");
+    struct File_Reader* empty_file = open_file("empty.txt");
 
     SECTION("test.txt size")
     {
-        REQUIRE(file_size(test) == 22);
+        REQUIRE(file_size(reader->file) == 22);
     }
     SECTION("Invalid file")
     {
-        REQUIRE(file_size(invalid_file) == -1);
+        REQUIRE(file_size(NULL) == -1);
     }
+    SECTION("empty_file")
+    {
+        REQUIRE(file_size(empty_file->file) == 0);
+    }
+    close_reader(reader);
+    close_reader(empty_file);
 }
 
 TEST_CASE("Reading a file into a char buffer")
 {
-    FILE* test = fopen("test.txt", "r");
-    FILE* invalid_file = NULL;
+    struct File_Reader* reader = open_file("test.txt");
+    struct File_Reader* invalid_file = open_file("not a file");
 
     SECTION("Read a valid file")
     {
         const char* test_contents = "Hello World\nI am Alex\n";
 
-        REQUIRE(strcmp(read_file(test), test_contents)== 0);
+        REQUIRE(strcmp(reader->contents, test_contents)== 0);
     }
     SECTION("Read invalid file")
     {
         REQUIRE(read_file(invalid_file) == NULL);
     }
+    close_reader(reader);
+    // Pointer for invalid_file never gets allocated. thus close_file isn't needed
 }
 
+/*
 TEST_CASE("Generating random integers")
 {
     SECTION("Invalid range")
@@ -68,6 +78,7 @@ TEST_CASE("Generate a random english character")
 
     REQUIRE(assertion);
 }
+*/
 
 TEST_CASE("Using timer to record elapsed time")
 {
