@@ -1,12 +1,9 @@
 /*
- * File: file_reader.h
- *
- * Brief:
+ * File: file_reader.c
  *
  * Author: Alexander DuPree
  *
- * Date: 24JAN2019
- *
+ * https://github.com/AlexanderJDupree/File_Reader
  */
 
 #include <stdlib.h>
@@ -48,13 +45,15 @@ void close_reader(struct File_Reader* reader)
 const char* read_file(struct File_Reader* reader)
 {
     char* contents = NULL;
-    if(reader && reader->size != 0)
+
+    // Ensure reader exists, contents have not been read, and file is not empty
+    if(reader && !reader->contents && reader->size != 0)
     {
         contents = (char*) malloc((reader->size + 1) * sizeof(char));
 
         // grab character from stream, store it into contents. Ensure it isn't
         // EOF char and ensure we don't write past the buffer size
-        int i = 0;
+        size_t i = 0;
         while( i < reader->size && (*(contents + i++) = fgetc(reader->file)) != EOF)
 
         *(contents + i) = '\0'; // Add null terminator to the end of string
@@ -62,9 +61,9 @@ const char* read_file(struct File_Reader* reader)
     return contents;
 }
 
-long file_size(FILE* file)
+size_t file_size(FILE* file)
 {
-    long size = -1;
+    size_t size = 0;
 
     if(file)
     {

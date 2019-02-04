@@ -1,7 +1,9 @@
 /*
  * File: prtest.c
  *
- * Brief:
+ * Brief: Proofreading test (prtest) app prints the contents of a specified file
+ *        to the console and asks the user if the contents were altered. The 
+ *        user is scored by their response time in ms. 
  *
  * Author: Alexander DuPree
  *
@@ -17,12 +19,10 @@
 #include "timer.h"
 #include "file_reader.h"
 
-#define DEFAULT_FILE "test.txt"
-
 void usage();
 
-// Displays the text with a random lower case character modified, returns index
-// of modified character
+// Displays the text with a random lower case character replaced, returns index
+// of replaced character
 int display_with_error(const char* text, int length);
 
 // Returns argv[1] or DEFAULT_FILE name
@@ -32,7 +32,7 @@ const char* get_file_name(int argc, char** argv);
 int random_int(int min, int max);
 
 // Runs the game for N rounds and prints the result of the game and each round
-int run_game(const char* text, int length, int rounds);
+int run_game(struct File_Reader* reader, int rounds);
 
 // 50% chance to display_with_error and return 1. Else print w/out error return 0
 int display_text(const char* text, int length);
@@ -44,6 +44,8 @@ int get_input();
 
 // Displays success/failure message and accumulated score
 void display_score(int score, int state);
+
+const char* DEFAULT_FILE =  "test.txt";
 
 // Hides main from the unit tests build
 #ifndef UNIT_TESTS
@@ -58,16 +60,9 @@ int main(int argc, char** argv)
 
     struct File_Reader* reader = open_file(get_file_name(argc, argv));
 
-    // reader can be NULL if open_file fails
-    // contents can be NULL if the file was empty
-    if(reader && reader->contents)
-    {
-        exit_status = run_game(reader->contents, reader->size, ROUNDS);
-    }
-    else
+    if((exit_status = run_game(reader, ROUNDS)))
     {
         usage();
-        exit_status = -1;
     }
 
     close_reader(reader);
@@ -129,8 +124,13 @@ int random_int(int min, int max)
     return (max - min == -1) ? 0 : min + random() % (max - min + 1);
 }
 
-int run_game(const char* text, int length, int rounds)
+int run_game(struct File_Reader* reader, int rounds)
 {
+    if (!reader || !reader->contents)
+    {
+        return 1;
+    }
+
     int total_score = 0;
     int state = 0;
     unsigned char input = 0;
@@ -141,7 +141,7 @@ int run_game(const char* text, int length, int rounds)
         int score = 0;
 
         // State is either 0 (No errors in text) or 1 (displayed with error)
-        state = display_text(text, length);
+        state = display_text(reader->contents, reader->size);
 
         timer_start();
         input = get_input();
@@ -149,15 +149,17 @@ int run_game(const char* text, int length, int rounds)
 
         score = elapsed_time(MILLISECONDS);
 
-        if(input > 1) // User quit
+        if(input <= 1)
         {
-            return input;
+            // If the user answered incorrectly add 5000 to score then display.
+            (state = (state == input)) ? display_score(score, state) 
+                                       : display_score(score += 5000, state);
+            total_score += score;
         }
-
-        // If the user answered incorrectly add 5000 to score then display.
-        (state = (state == input)) ? display_score(score, state) 
-                                   : display_score(score += 5000, state);
-        total_score += score;
+        else // User quit
+        {
+            rounds = i;
+        }
     }
     printf("\n%d rounds, total score %d\n", rounds, total_score);
     return 0;

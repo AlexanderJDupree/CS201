@@ -1,8 +1,11 @@
 /*
  * File: timer.h
  *
- * Brief:
- *
+ * Brief: Timer utility provides a simple/intuitive way to record elapsed times
+ *        in C/C++. Timer is essentially a wrapper for the gettimeofday() 
+ *        functions defined in sys/time.h. As such, this utility will NOT work 
+ *        on Windows machines. 
+ * 
  * Author: Alexander DuPree
  *
  * Date: 24JAN2019
@@ -43,11 +46,10 @@ long get_elapsed_time(struct Timer*, enum time_units);
 /****** UNIT CONVERSIONS ******/
 
 // s = seconds, ms = milliseconds, us = microseconds
+// double is used to preserve precision through the conversion
 double stoms(double seconds);
 double stous(double seconds);
 double stos(double seconds);
-
-// double is used to preserve the precision through the conversion
 double ustos(double microseconds);
 double mstos(double milliseconds);
 

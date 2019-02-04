@@ -1,8 +1,6 @@
 /*
  * File: timer.c
  *
- * Brief:
- *
  * Author: Alexander DuPree
  *
  * Date: 24JAN2019
@@ -60,7 +58,7 @@ long get_elapsed_time(struct Timer* timer, enum time_units desired_units)
 {
     Converter converter = get_conversion(desired_units);
 
-    // Composes two units, seconds and microseconds, into time elapsed in ms
+    // Composes the two units into the desired_units
     return converter(timer->stop.tv_sec - timer->start.tv_sec) + 
            converter(ustos((timer->stop.tv_usec - timer->start.tv_usec)));
 }

@@ -58,6 +58,7 @@ clean:
 	rm -f $(OBJ_DIR)/*.o
 	rm -f $(TEST_OBJ_DIR)/*.o
 	rm -f $(TESTS_MAIN)
+	rm -f $(tests)
 
 help:
 	@echo "Usage:\n\tBuild Application: make\n\tBuild Unit tests:  make tests\n\tClean obj files:   make clean"

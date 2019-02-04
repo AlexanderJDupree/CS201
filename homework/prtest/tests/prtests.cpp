@@ -30,7 +30,7 @@ TEST_CASE("Determining a file size in bytes")
     }
     SECTION("Invalid file")
     {
-        REQUIRE(file_size(NULL) == -1);
+        REQUIRE(file_size(NULL) == 0);
     }
     SECTION("empty_file")
     {
