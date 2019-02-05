@@ -3,7 +3,7 @@
 # Author: Alexander DuPree
 
 CC := gcc
-CFLAGS := -Wall -g
+CFLAGS := -Wall -g -std=c99
 INCLUDE := -I include/
 
 SRC_DIR := src
