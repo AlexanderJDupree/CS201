@@ -4,7 +4,7 @@
 
 CC := gcc
 FLAGS := -Wall -g
-CFLAGS := $(FLAGS) -std=c99
+CFLAGS := $(FLAGS) -std=c11
 INCLUDE := -I include/
 
 SRC_DIR := src
@@ -13,7 +13,7 @@ SRC_FILES := $(wildcard $(SRC_DIR)/*.c)
 OBJ_FILES := $(patsubst $(SRC_DIR)/%.c,$(OBJ_DIR)/%.o,$(SRC_FILES))
 APPLICATION := main.c
 APPLICATION_OBJ := obj/main.o
-TARGET := main
+TARGET := digraphs
 
 TEST_CC := g++
 TEST_FLAGS := $(FLAGS) -D UNIT_TESTS -D LOG_ERRORS

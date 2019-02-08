@@ -8,6 +8,8 @@
  * Date: 2/4/2019
  */
 
+#include <ctype.h>
+#include <stdio.h> // DEBUG
 #include <string.h>
 #include <stdlib.h>
 #include "digraph.h"
@@ -26,6 +28,7 @@ typedef struct
 struct Digraph_Class
 {
     Edge* edge_list;
+    long char_count;
     long size;
 };
 
@@ -171,6 +174,7 @@ Digraph* new_digraph()
     }
 
     new_graph->size = 0;
+    new_graph->char_count = 0;
     new_graph->edge_list = construct_edge_list();
 
     return new_graph;
@@ -180,7 +184,7 @@ Digraph* construct_graph(const char* text)
 {
     Digraph* new_graph = new_digraph();
 
-    parse_text(new_graph, text);
+    new_graph->char_count = parse_text(new_graph, text);
 
     return new_graph;
 }
@@ -193,20 +197,33 @@ void free_digraph(Digraph* self)
 
 int parse_text(Digraph* self, const char* text)
 {
+    int char_count = 0;
     if(text)
     {
         int length = strlen(text);
         for (int i = 0; i < length - 1; ++i)
         {
-            add_edge(self, text[i], text[i + 1]);
+            if(isalpha(text[i]))
+            {
+                ++char_count;
+            }
+            if(isalpha(text[i]) && isalpha(text[i + 1]))
+            {
+                add_edge(self, text[i], text[i + 1]);
+            }
         }
     }
-    return text != NULL;
+    return char_count;
 }
 
 long graph_size(Digraph* self)
 {
     return self->size;
+}
+
+long char_count(Digraph* self)
+{
+    return self->char_count;
 }
 
 long get_edge(Digraph* self, char origin, char dest)
@@ -243,6 +260,20 @@ void for_each(Digraph* self, void(*func)(const char* vertices, long weight), int
     for (int i = 0; i < MAX_EDGES && i <= n; ++i)
     {
         func(temp_list[i]->vertices, temp_list[i]->weight);
+    }
+    return;
+}
+
+// DEBUG ONLY
+void display_all(Digraph* self)
+{
+    for (int i = 0; i < MAX_EDGES; ++i)
+    {
+        if(i % ALPHABETIC_CHARACTERS == 0)
+        {
+            printf("\n");
+        }
+        printf("%s:%ld", self->edge_list[i].vertices, self->edge_list[i].weight);
     }
     return;
 }

@@ -1,0 +1,1 @@
+A digraph is a pair of letters that appear next to each other in a string

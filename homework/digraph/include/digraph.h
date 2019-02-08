@@ -30,6 +30,9 @@ void free_digraph(Digraph* self);
 // Returns the sum of all weights on the graph
 long graph_size(Digraph* self);
 
+// Returns the number of alphabetic character in the most recent text parse
+long char_count(Digraph* self);
+
 // Returns the weight of the corresponding edge, else -1
 long get_edge(Digraph* self, char origin, char dest);
 
@@ -41,5 +44,7 @@ int parse_text(Digraph* self, const char* text);
 
 // Performs functor on 'n' edges from the graph from heaviest weight to least
 void for_each(Digraph* self, void (*func)(const char* vertices, long weight), int n);
+
+void display_all(Digraph* self);
 
 #endif // DIGRAPH_H
