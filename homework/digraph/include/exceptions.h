@@ -77,5 +77,9 @@ void throw_exception(Exception* exception, const char* msg, int ret_val);
    returns ret_val */
 int handle_exception(Exception* exception);
 
+void log_error(const char* err);
+
+void log_exception(Exception* exception);
+
 #endif // EXCEPTIONS_H
 

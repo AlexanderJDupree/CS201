@@ -16,21 +16,23 @@
 #include "file_reader.h"
 
 void usage();
+void display_analysis(Digraph* graph, const char* header, int n);
 void display_edge(const char* vertices, long weight);
 
-int run_digraphs(const char* file_name, const char* directory);
-int run_analysis(const char* text);
+void file_analysis(Digraph* graph, const char* file_name);
+int run_digraphs(const char* file_name, const char* directory, int n);
 
 // Hides main from the unit tests build
 #ifndef UNIT_TESTS
 int main(int argc, char** argv)
 {
     int opt = 0;
+    int count = 10; // Default number of digraphs to be shown
     int exit_status = 0;
     const char* file_name = NULL;
     const char* directory = NULL;
 
-    while((opt = getopt(argc, argv, "h?t:p:")) != -1)
+    while((opt = getopt(argc, argv, "h?t:p:c:")) != -1)
     {
         switch(opt)
         {
@@ -38,17 +40,17 @@ int main(int argc, char** argv)
                        break;
             case 'p' : directory = optarg;
                        break;
-            default  : exit_status = -1;
-                       break;
+            default  : break;
         }
     }
-    if(exit_status == -1 || argc == 1)
+    if(file_name == NULL && directory == NULL)
     {
         usage();
+        exit_status = -1;
     }
     else
     {
-        exit_status = run_digraphs(file_name, directory);
+        exit_status = run_digraphs(file_name, directory, count);
     }
 
     return exit_status;
@@ -57,8 +59,19 @@ int main(int argc, char** argv)
 
 void usage()
 {
-    fprintf(stderr, "usage:\n  digraphs <options>\nOptions:\n  -t "
-                    "<path to file>\n  -p <directory>\n");
+    fprintf(stderr, "usage:\n  digraphs <options>\nOptions:\n  "
+            "-t <path to file>\tPath to file to be analyzed by digraphs\n  "
+            "-p <directory>\tPath to directory to be recursively analyzed\n  "
+            "-c <integer>\t\tNumber of top digraphs to be displayed\n");
+    return;
+}
+
+void display_analysis(Digraph* graph, const char* header, int n)
+{
+    printf("\nAnalysis of: %s\n", header);
+    printf("Alphabetic Characters: %ld \nTop Digraphs:\n", char_count(graph));
+
+    for_each(graph, n, display_edge);
     return;
 }
 
@@ -68,46 +81,38 @@ void display_edge(const char* vertices, long weight)
     return;
 }
 
-int run_digraphs(const char* file_name, const char* directory)
+int run_digraphs(const char* file_name, const char* directory, int n)
 {
     int ret_val = 0;
-    if(file_name)
+    Digraph* graph = new_digraph();
+
+    // Set up exception handler
+    if(catch_exception(standard_exceptions.invalid_argument))
     {
-        File_Reader* reader = open_file(file_name);
-        if(reader && reader->contents)
-        {
-            ret_val = run_analysis(reader->contents);
-        }
-        else
-        {
-            // TODO throw/log error
-            ret_val = -1;
-        }
-        close_reader(reader);
+        log_error("Error encountered: exiting");
+        ret_val = handle_exception(&standard_exceptions.invalid_argument);
     }
-    if(directory)
+    else
     {
-        ret_val = 0;
+        file_analysis(graph, file_name);
+        display_analysis(graph, file_name, n);
     }
-    return ret_val;
-}
-
-int run_analysis(const char* text)
-{
-    if(catch_exception(standard_exceptions.bad_alloc))
-    {
-        return handle_exception(&standard_exceptions.bad_alloc);
-    }
-
-    Digraph* graph = construct_graph(text);
-
-    printf("Alphbetic Characters: %ld \nTop Digraphs:\n", char_count(graph));
-
-    // TODO 10 is a magic number, make a var the user can set
-    for_each(graph, display_edge, 10);
 
     free_digraph(graph);
 
-    return 0;
+    return ret_val;
+}
+
+void file_analysis(Digraph* graph, const char* file_name)
+{
+    File_Reader reader = open_file(file_name);
+    if(!reader.file)
+    {
+        throw_exception(&standard_exceptions.invalid_argument, file_name, -1);
+    }
+
+    parse_text(graph, reader.contents);
+    close_reader(&reader);
+    return;
 }
 

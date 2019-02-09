@@ -3,7 +3,7 @@
 # Author: Alexander DuPree
 
 CC := gcc
-FLAGS := -Wall -g
+FLAGS := -Wall -g -D LOG_ERRORS
 CFLAGS := $(FLAGS) -std=c11
 INCLUDE := -I include/
 
@@ -16,7 +16,7 @@ APPLICATION_OBJ := obj/main.o
 TARGET := digraphs
 
 TEST_CC := g++
-TEST_FLAGS := $(FLAGS) -D UNIT_TESTS -D LOG_ERRORS
+TEST_FLAGS := $(FLAGS) -D UNIT_TESTS
 TEST_INCLUDE := $(INCLUDE) -I tests/third_party
 
 TEST_DIR := tests

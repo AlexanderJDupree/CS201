@@ -184,7 +184,7 @@ Digraph* construct_graph(const char* text)
 {
     Digraph* new_graph = new_digraph();
 
-    new_graph->char_count = parse_text(new_graph, text);
+    parse_text(new_graph, text);
 
     return new_graph;
 }
@@ -195,7 +195,7 @@ void free_digraph(Digraph* self)
     free(self);
 }
 
-int parse_text(Digraph* self, const char* text)
+void parse_text(Digraph* self, const char* text)
 {
     int char_count = 0;
     if(text)
@@ -213,7 +213,8 @@ int parse_text(Digraph* self, const char* text)
             }
         }
     }
-    return char_count;
+    self->char_count = char_count;
+    return;
 }
 
 long graph_size(Digraph* self)
@@ -247,7 +248,7 @@ long add_edge(Digraph* self, char origin, char dest)
     return self->edge_list[convert_to_index(origin, dest)].weight += 1;
 }
 
-void for_each(Digraph* self, void(*func)(const char* vertices, long weight), int n)
+void for_each(Digraph* self, int n, void(*func)(const char* vertices, long weight))
 {
     Edge* temp_list[MAX_EDGES];
     for (int i = 0; i < MAX_EDGES; ++i)

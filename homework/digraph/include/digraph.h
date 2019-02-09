@@ -40,11 +40,12 @@ long get_edge(Digraph* self, char origin, char dest);
 long add_edge(Digraph* self, char origin, char dest);
 
 // Parses text into digraph, returns 1 on success, 0 for failure
-int parse_text(Digraph* self, const char* text);
+void parse_text(Digraph* self, const char* text);
 
-// Performs functor on 'n' edges from the graph from heaviest weight to least
-void for_each(Digraph* self, void (*func)(const char* vertices, long weight), int n);
+// Performs functor on 'n' edges from the graphs from heaviest weights to least
+void for_each(Digraph* self, int n, void (*func)(const char* vertices, long weight));
 
+//DEBUG
 void display_all(Digraph* self);
 
 #endif // DIGRAPH_H

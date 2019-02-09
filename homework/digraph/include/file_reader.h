@@ -17,12 +17,12 @@
 
 typedef struct
 {
-    size_t size;
     FILE* file;
+    size_t size;
     const char* contents;
 } File_Reader;
 
-File_Reader* open_file(const char* file_name);
+File_Reader open_file(const char* file_name);
 
 void close_reader(File_Reader* reader);
 
