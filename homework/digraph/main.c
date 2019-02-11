@@ -11,6 +11,7 @@
 
 #include <stdio.h>
 #include <getopt.h>
+#include <inttypes.h>
 #include "digraph.h"
 #include "exceptions.h"
 #include "file_reader.h"
@@ -40,9 +41,11 @@ int main(int argc, char** argv)
                        break;
             case 'p' : directory = optarg;
                        break;
+            case 'c' : count = strtoumax(optarg, NULL, 0);
             default  : break;
         }
     }
+
     if(file_name == NULL && directory == NULL)
     {
         usage();
@@ -68,8 +71,10 @@ void usage()
 
 void display_analysis(Digraph* graph, const char* header, int n)
 {
-    printf("\nAnalysis of: %s\n", header);
-    printf("Alphabetic Characters: %ld \nTop Digraphs:\n", char_count(graph));
+    printf("\nAnalysis of: %s\n"
+           "Alphabetic Characters: %ld\n"
+           "Top %d Digraphs:\n", 
+           header, char_count(graph), n);
 
     for_each(graph, n, display_edge);
     return;
