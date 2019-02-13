@@ -29,7 +29,7 @@ struct Digraph_Class
 {
     Edge* edge_list;
     long char_count;
-    long size;
+    long weight_sum;
 };
 
 /*******************************************************************************
@@ -173,7 +173,7 @@ Digraph* new_digraph()
         throw_exception(&standard_exceptions.bad_alloc, "new_digraph()", -1);
     }
 
-    new_graph->size = 0;
+    new_graph->weight_sum = 0;
     new_graph->char_count = 0;
     new_graph->edge_list = construct_edge_list();
 
@@ -195,6 +195,20 @@ void free_digraph(Digraph* self)
     free(self);
 }
 
+void clear_graph(Digraph* self)
+{
+    // checks if graph is already empty
+    if(self->weight_sum > 0)
+    {
+        for (int i = 0; i < MAX_EDGES; ++i)
+        {
+            self->edge_list[i].weight = 0;
+        }
+        self->weight_sum = 0;
+        self->char_count = 0;
+    }
+}
+
 void parse_text(Digraph* self, const char* text)
 {
     int char_count = 0;
@@ -203,7 +217,7 @@ void parse_text(Digraph* self, const char* text)
         int length = strlen(text);
         for (int i = 0; i < length - 1; ++i)
         {
-            if(isalpha(text[i]))
+            if(isalpha(text[i])) // TODO refactor
             {
                 ++char_count;
             }
@@ -213,13 +227,13 @@ void parse_text(Digraph* self, const char* text)
             }
         }
     }
-    self->char_count = char_count;
+    self->char_count += char_count;
     return;
 }
 
 long graph_size(Digraph* self)
 {
-    return self->size;
+    return self->weight_sum;
 }
 
 long char_count(Digraph* self)
@@ -241,10 +255,10 @@ long add_edge(Digraph* self, char origin, char dest)
     if(catch_exception(standard_exceptions.out_of_range))
     {
         // Add failed, reduce to size to original state
-        --(self->size);
+        --(self->weight_sum);
         return handle_exception(&standard_exceptions.out_of_range);
     }
-    ++(self->size);
+    ++(self->weight_sum);
     return self->edge_list[convert_to_index(origin, dest)].weight += 1;
 }
 
@@ -263,6 +277,11 @@ void for_each(Digraph* self, int n, void(*func)(const char* vertices, long weigh
         func(temp_list[i]->vertices, temp_list[i]->weight);
     }
     return;
+}
+
+int max_edges()
+{
+    return MAX_EDGES;
 }
 
 // DEBUG ONLY

@@ -18,7 +18,7 @@ extern "C" {
 }
 
 
-TEST_CASE("Constructing a digraph")
+TEST_CASE("Constructing a digraph", "[digraph]")
 {
     Digraph* graph = new_digraph();
 
@@ -28,7 +28,7 @@ TEST_CASE("Constructing a digraph")
 }
 
 
-TEST_CASE("Adding/retrieiving edges")
+TEST_CASE("Adding/retrieiving edges", "[digraph]")
 {
     Digraph* graph = new_digraph();
 
@@ -59,7 +59,7 @@ TEST_CASE("Adding/retrieiving edges")
     free_digraph(graph);
 }
 
-TEST_CASE("Get the size of the graph (sum of all weights)")
+TEST_CASE("Get the size of the graph (sum of all weights)", "[digraph]")
 {
     const char* test_text = "ZZadZZadZZbaZZad";
 
@@ -77,5 +77,35 @@ TEST_CASE("Get the size of the graph (sum of all weights)")
 
     free_digraph(graph);
     free_digraph(empty_graph);
+}
+
+void assert_empty_edge(const char* vertices, long weight)
+{
+    REQUIRE(vertices != NULL);
+    REQUIRE(weight == 0);
+}
+
+TEST_CASE("Clearing a digraph", "[digraph]")
+{
+    const char* test_text = "ZZadZZadZZbaZZad";
+
+    Digraph* graph = construct_graph(test_text);
+    Digraph* empty_graph = new_digraph();
+
+    clear_graph(graph);
+    clear_graph(empty_graph);
+
+    SECTION("Char count is 0")
+    {
+        REQUIRE(char_count(graph) == 0);
+    }
+    SECTION("Size is 0")
+    {
+        REQUIRE(graph_size(graph) == 0);
+    }
+    SECTION("The weight of every edge is 0")
+    {
+        for_each(graph, max_edges(), assert_empty_edge);
+    }
 }
 

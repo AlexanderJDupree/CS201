@@ -3,7 +3,8 @@
 # Author: Alexander DuPree
 
 CC := gcc
-FLAGS := -Wall -g -D LOG_ERRORS
+DEFINES := -D LOG_ERRORS -D _DEFAULT_SOURCE
+FLAGS := -Wall -g $(DEFINES)
 CFLAGS := $(FLAGS) -std=c11
 INCLUDE := -I include/
 
@@ -16,7 +17,8 @@ APPLICATION_OBJ := obj/main.o
 TARGET := digraphs
 
 TEST_CC := g++
-TEST_FLAGS := $(FLAGS) -D UNIT_TESTS
+TEST_DEFINES := -D UNIT_TESTS
+TEST_FLAGS := $(FLAGS) $(TEST_DEFINES)
 TEST_INCLUDE := $(INCLUDE) -I tests/third_party
 
 TEST_DIR := tests
@@ -60,6 +62,8 @@ clean:
 	rm -f $(TEST_OBJ_DIR)/*.o
 	rm -f $(TESTS_MAIN)
 	rm -f $(tests)
+	rm -rf tests/level0
 
 help:
 	@echo "Usage:\n\tBuild Application: make\n\tBuild Unit tests:  make tests\n\tClean obj files:   make clean"
+

@@ -26,6 +26,8 @@ Digraph* construct_graph(const char* text);
 // MUST be called before program exit to prevent memory leaks
 void free_digraph(Digraph* self);
 
+void clear_graph(Digraph* self);
+
 /* Member Functions */
 // Returns the sum of all weights on the graph
 long graph_size(Digraph* self);
@@ -44,6 +46,9 @@ void parse_text(Digraph* self, const char* text);
 
 // Performs functor on 'n' edges from the graphs from heaviest weights to least
 void for_each(Digraph* self, int n, void (*func)(const char* vertices, long weight));
+
+// Returns the maximum possible edges
+int max_edges();
 
 //DEBUG
 void display_all(Digraph* self);

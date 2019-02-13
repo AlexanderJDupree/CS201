@@ -8,7 +8,6 @@
  * Date: 2/4/2019
  */
 
-
 #include <stdio.h> // fprintf
 #include "exceptions.h"
 
