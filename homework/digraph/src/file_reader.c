@@ -7,11 +7,18 @@
  */
 
 #include <stdlib.h>
+#include <sys/stat.h>
 #include "file_reader.h"
 
-File_Reader open_file(const char* file_name)
+int is_file(const char* file_path)
 {
-    FILE* file = fopen(file_name, "r");
+    struct stat path_stat;
+    return (lstat(file_path, &path_stat) == 0) ? S_ISREG(path_stat.st_mode) : 0;
+}
+
+File_Reader open_file(const char* file_path)
+{
+    FILE* file = (is_file(file_path)) ? fopen(file_path, "r") : NULL;
     File_Reader reader = { .file = file, .size = 0, .contents = NULL };
 
     if(file)  // if fopen was successfull, parse the file

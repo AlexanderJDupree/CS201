@@ -1,7 +1,8 @@
 /*
  * File: digraph.c
  *
- * Brief: 
+ * Brief: Implementation file for digraphs object. Defines public digraph
+ *        methods and static private subroutines the digraph uses.
  *
  * Author: Alexander DuPree
  *
@@ -9,7 +10,6 @@
  */
 
 #include <ctype.h>
-#include <stdio.h> // DEBUG
 #include <string.h>
 #include <stdlib.h>
 #include "digraph.h"
@@ -19,7 +19,7 @@ static const int MAX_EDGES = 2704;
 static const int ALPHABETIC_CHARACTERS = 52;
 static const char* ALPHABET 
                        = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
-typedef struct
+typedef struct Edge
 {
     long weight;
     char vertices[3];
@@ -71,17 +71,19 @@ static Edge* construct_edge_list()
  * Static/Private Digraph methods
  ******************************************************************************/
 
+static void throw_if_null(Digraph* self)
+{
+    if(self == NULL)
+    {
+        throw_exception(&standard_exceptions.null_ptr, "Digraph* self", -1);
+    }
+    return;
+}
+
 static long char_to_index(char letter)
 {
-    if(letter >= 'A' && letter <= 'Z')
-    {
-        return letter - 'A';
-    }
-    if(letter >= 'a' && letter <= 'z')
-    {
-        return letter - 'a' + 26;
-    }
-    return -1;
+    return (letter >= 'A' && letter <= 'Z') ? letter - 'A' :
+           (letter >= 'a' && letter <= 'z') ? letter - 'a' + 26 : -1;
 }
 
 static long convert_to_index(char origin, char dest)
@@ -127,7 +129,7 @@ static int partition(Edge** list, int left, int right,
 
     int i = left - 1;
     
-    for (int j = left; j <= right - 1; j++)
+    for (int j = left; j <= right - 1; ++j)
     {
         // if comparator succeeds we switch pivot with i
         if (comparator(list[j], pivot))
@@ -189,14 +191,22 @@ Digraph* construct_graph(const char* text)
     return new_graph;
 }
 
-void free_digraph(Digraph* self)
+void free_digraph(Digraph** self)
 {
-    free(self->edge_list);
-    free(self);
+    if(self && *self)
+    {
+        (*self)->weight_sum = 0;
+        (*self)->char_count = 0;
+        free((*self)->edge_list);
+        free((*self));
+        *self = NULL;
+    }
 }
 
 void clear_graph(Digraph* self)
 {
+    throw_if_null(self);
+
     // checks if graph is already empty
     if(self->weight_sum > 0)
     {
@@ -209,8 +219,10 @@ void clear_graph(Digraph* self)
     }
 }
 
-void parse_text(Digraph* self, const char* text)
+int parse_text(Digraph* self, const char* text)
 {
+    throw_if_null(self);
+
     int char_count = 0;
     if(text)
     {
@@ -228,21 +240,24 @@ void parse_text(Digraph* self, const char* text)
         }
     }
     self->char_count += char_count;
-    return;
+    return char_count;
 }
 
 long graph_size(Digraph* self)
 {
+    throw_if_null(self);
     return self->weight_sum;
 }
 
 long char_count(Digraph* self)
 {
+    throw_if_null(self);
     return self->char_count;
 }
 
 long get_edge(Digraph* self, char origin, char dest)
 {
+    throw_if_null(self);
     if(catch_exception(standard_exceptions.out_of_range))
     {
         return handle_exception(&standard_exceptions.out_of_range);
@@ -252,6 +267,7 @@ long get_edge(Digraph* self, char origin, char dest)
 
 long add_edge(Digraph* self, char origin, char dest)
 {
+    throw_if_null(self);
     if(catch_exception(standard_exceptions.out_of_range))
     {
         // Add failed, reduce to size to original state
@@ -264,6 +280,9 @@ long add_edge(Digraph* self, char origin, char dest)
 
 void for_each(Digraph* self, int n, void(*func)(const char* vertices, long weight))
 {
+    throw_if_null(self);
+
+    // Create a temporary list of pointers to actual data
     Edge* temp_list[MAX_EDGES];
     for (int i = 0; i < MAX_EDGES; ++i)
     {
@@ -272,7 +291,8 @@ void for_each(Digraph* self, int n, void(*func)(const char* vertices, long weigh
 
     quick_sort(temp_list, 0, MAX_EDGES - 1, compare_weight_descending);
 
-    for (int i = 0; i < MAX_EDGES && i <= n; ++i)
+    // Perform functor on top N digraphs
+    for (int i = 0; i < MAX_EDGES && i < n; ++i)
     {
         func(temp_list[i]->vertices, temp_list[i]->weight);
     }
@@ -282,19 +302,5 @@ void for_each(Digraph* self, int n, void(*func)(const char* vertices, long weigh
 int max_edges()
 {
     return MAX_EDGES;
-}
-
-// DEBUG ONLY
-void display_all(Digraph* self)
-{
-    for (int i = 0; i < MAX_EDGES; ++i)
-    {
-        if(i % ALPHABETIC_CHARACTERS == 0)
-        {
-            printf("\n");
-        }
-        printf("%s:%ld", self->edge_list[i].vertices, self->edge_list[i].weight);
-    }
-    return;
 }
 

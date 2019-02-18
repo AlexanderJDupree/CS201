@@ -5,6 +5,13 @@ Homework 3 - digraph
 
 ================================= USAGE ========================================
 
+usage:
+  digraphs <options>
+Options:
+  -t <path to file>	Path to file to be analyzed by digraphs
+  -p <directory>	Path to directory to be recursively analyzed
+  -c <integer>		Number of top digraphs to be displayed
+
 Note:
     Build Application: make
 	Build Unit tests:  make tests

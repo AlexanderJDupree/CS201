@@ -22,7 +22,9 @@ typedef struct
     const char* contents;
 } File_Reader;
 
-File_Reader open_file(const char* file_name);
+int is_file(const char* file_path);
+
+File_Reader open_file(const char* file_path);
 
 void close_reader(File_Reader* reader);
 

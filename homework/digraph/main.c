@@ -1,7 +1,13 @@
 /*
- * File: 
+ * File: main.c
  *
- * Brief:
+ * Brief: main.c is the entry point for the digraphs application. mains 
+ *        responsibility is to parse the command line arguments and dispatch the
+ *        args towards the correct functions. run_digraphs conducts the
+ *        appropriate digraph analysis and dispalys the results of this analysis
+ *
+ *        Note: directory_analysis will ignore symlinks and permission protected
+ *              directories
  *
  * Author: Alexander DuPree
  *
@@ -13,17 +19,26 @@
 #include <getopt.h>
 #include <string.h>
 #include <dirent.h>
+#include <unistd.h>
 #include <inttypes.h>
+
 #include "digraph.h"
 #include "exceptions.h"
 #include "file_reader.h"
 
 void usage();
+
+// Diplays top N digraphs
 void display_analysis(Digraph* graph, const char* header, int n);
 void display_edge(const char* vertices, long weight);
 
+// Uses file_reader utility to load a file into memory and run digraph analysis
 void file_analysis(Digraph* graph, const char* file_name);
+
+// Recursively travels the indicated directory parsing each directory entry
 void directory_analysis(Digraph* graph, const char* directory);
+
+// Runs the appropriate digraph analysis, returns 0 on success, -1 on any error
 int run_digraphs(const char* file_name, const char* directory, int n);
 
 // Hides main from the unit tests build
@@ -48,20 +63,18 @@ int main(int argc, char** argv)
             default  : break;
         }
     }
-    // Set up exception handler
-    if(catch_exception(standard_exceptions.invalid_argument))
+    if(!file_name && !directory)
     {
-        log_error("Error encountered: exiting");
-        exit_status = handle_exception(&standard_exceptions.invalid_argument);
+        usage();
+        exit_status = -1;
     }
     else
     {
         exit_status = run_digraphs(file_name, directory, count);
     }
-
     return exit_status;
 }
-#endif
+#endif // UNIT_TESTS
 
 void usage()
 {
@@ -91,28 +104,29 @@ void display_edge(const char* vertices, long weight)
 
 int run_digraphs(const char* file_name, const char* directory, int n)
 {
-    int ret_val = 0;
     Digraph* graph = new_digraph();
 
-    if(!file_name && !directory)
+    // Set up exception handler
+    if(catch_exception(standard_exceptions.invalid_argument))
     {
-        usage();
-        ret_val = -1;
+        free_digraph(&graph);
+        log_error("Error encountered: exiting");
+        return handle_exception(&standard_exceptions.invalid_argument);
     }
     if(file_name)
     {
         file_analysis(graph, file_name);
         display_analysis(graph, file_name, n);
     }
-    if(directory)
+    if(directory) // TODO handle invalid directory argument
     {
         clear_graph(graph);
         directory_analysis(graph, directory);
         display_analysis(graph, directory, n);
     }
-    free_digraph(graph);
+    free_digraph(&graph);
 
-    return ret_val;
+    return 0;
 }
 
 void file_analysis(Digraph* graph, const char* file_name)
@@ -133,9 +147,8 @@ void directory_analysis(Digraph* graph, const char* directory)
     struct dirent* entry = NULL;
     DIR* dir = opendir(directory);
 
-    if (dir == NULL)
+    if (dir == NULL || chdir(directory) != 0)
     {
-        //throw_exception(&standard_exceptions.invalid_argument, directory, -1);
         return;
     }
 
@@ -144,37 +157,16 @@ void directory_analysis(Digraph* graph, const char* directory)
         if(strcmp(entry->d_name, ".") != 0 && strcmp(entry->d_name, "..") != 0)
         {
             parse_text(graph, entry->d_name);
-            if(entry->d_type & DT_DIR)
+            if(entry->d_type == DT_DIR)
             {
-                char path[1024]; // TODO dynamic array, so we can have handle arbitrarly length paths
-                snprintf(path, sizeof(path), "%s/%s", directory, entry->d_name);
-                // TODO check if %s/%s works on windows systems
-                
                 // Recursively travel the file system
-                directory_analysis(graph, path);
+                directory_analysis(graph, entry->d_name);
             }
         }
     }
+
+    closedir(dir);
+    chdir("..");
     return;
 }
-
-/*
-void directory_analysis(Digraph* graph, const char* directory)
-{
-    Dir_Crawler* crawler = open_dir(directory);
-
-    if(!crawler)
-    {
-        throw_exception(&standard_exceptions.invalid_argument, directory, -1);
-    }
-
-    while(has_next(crawler))
-    {
-        parse_text(graph, get_next(crawler));
-    }
-    
-    // Free/destroy crawler?
-    return;
-}
-*/
 

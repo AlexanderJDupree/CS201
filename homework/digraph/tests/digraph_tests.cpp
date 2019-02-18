@@ -9,12 +9,11 @@
  *
  */
 
-#define UNIT_TESTS 1
-
 #include <catch.hpp>
 
 extern "C" {
     #include "digraph.h"
+    #include "exceptions.h"
 }
 
 
@@ -24,7 +23,7 @@ TEST_CASE("Constructing a digraph", "[digraph]")
 
     REQUIRE(graph != NULL);
 
-    free_digraph(graph);
+    free_digraph(&graph);
 }
 
 
@@ -56,7 +55,7 @@ TEST_CASE("Adding/retrieiving edges", "[digraph]")
             REQUIRE(add_edge(graph, 'Z', 'Z') == i);
         }
     }
-    free_digraph(graph);
+    free_digraph(&graph);
 }
 
 TEST_CASE("Get the size of the graph (sum of all weights)", "[digraph]")
@@ -75,8 +74,8 @@ TEST_CASE("Get the size of the graph (sum of all weights)", "[digraph]")
         REQUIRE(graph_size(empty_graph) == 0);
     }
 
-    free_digraph(graph);
-    free_digraph(empty_graph);
+    free_digraph(&graph);
+    free_digraph(&empty_graph);
 }
 
 void assert_empty_edge(const char* vertices, long weight)
@@ -106,6 +105,51 @@ TEST_CASE("Clearing a digraph", "[digraph]")
     SECTION("The weight of every edge is 0")
     {
         for_each(graph, max_edges(), assert_empty_edge);
+    }
+
+    free_digraph(&graph);
+    free_digraph(&empty_graph);
+}
+
+TEST_CASE("Free digraphs from memory", "[digraph]")
+{
+    
+    // Essentially these tests pass if there is no segfault
+
+    SECTION("Normal operation")
+    {
+        const char* test_text = "ZZadZZadZZbaZZad";
+
+        Digraph* graph = construct_graph(test_text);
+
+        free_digraph(&graph);
+        REQUIRE(graph == NULL);
+    }
+    SECTION("Double free")
+    {
+        const char* test_text = "ZZadZZadZZbaZZad";
+
+        Digraph* graph = construct_graph(test_text);
+
+        free_digraph(&graph);
+        free_digraph(&graph);
+
+        REQUIRE(graph == NULL);
+    }
+    SECTION("For each after free")
+    {
+        if(catch_exception(standard_exceptions.null_ptr))
+        {
+            REQUIRE(handle_exception(&standard_exceptions.null_ptr) == -1);
+        }
+        else
+        {
+            Digraph* empty_graph = new_digraph();
+
+            free_digraph(&empty_graph);
+
+            for_each(empty_graph, max_edges(), assert_empty_edge);
+        }
     }
 }
 

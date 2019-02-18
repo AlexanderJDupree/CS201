@@ -1,7 +1,8 @@
 /*
  * File: exceptions.c
  *
- * Brief: 
+ * Brief: Implementation file for the exceptions utlity. Defines global standard
+ *        exceptions and the exceptions public interface
  *
  * Author: Alexander DuPree
  *
@@ -10,6 +11,24 @@
 
 #include <stdio.h> // fprintf
 #include "exceptions.h"
+
+struct Standard_Exceptions standard_exceptions = {
+    .out_of_range = {
+        .what = "out of range, check indices",
+    },
+    .invalid_argument = {
+        .what = "Argument(s) is invalid",
+    },
+    .null_ptr = {
+        .what = "Pointer is NULL",
+    },
+    .bad_alloc = {
+        .what = "Error, failed to allocate memory",
+    },
+    .logic_error = {
+        .what = "Logic error occured",
+    }
+};
 
 int try_exception(Exception* exception)
 {

@@ -1,7 +1,9 @@
 /*
  * File: exceptions.h
  *
- * Brief: 
+ * Brief: exceptions is a very experimental attempt at implementing C++ style
+ *        exception handling (try catch throw). This utility is in the earliest
+ *        stages of developement is meant as an education opportunity for myself
  *
  * Author: Alexander DuPree
  *
@@ -41,30 +43,14 @@ struct Standard_Exceptions
     Exception bad_alloc;
     Exception logic_error;
 
-} static standard_exceptions = {
-    .out_of_range = {
-        .what = "out of range, check indices",
-    },
-    .invalid_argument = {
-        .what = "Argument(s) is invalid",
-    },
-    .null_ptr = {
-        .what = "Pointer is NULL",
-    },
-    .bad_alloc = {
-        .what = "Error, failed to allocate memory",
-    },
-    .logic_error = {
-        .what = "Logic error occured",
-    }
-};
+} extern standard_exceptions;
 
-/* setjmp() must be called in a valid stack frame so long jump and successfully 
+/* setjmp() must be called in a valid stack frame so long jump can successfully 
    jump up the stack. The only solution I can think of for this to occur is by
    using macros. This macro extends the catch_exception() function to first 
    check if the exception is valid, then set the jump environment for a throw
    call later */
-#define catch_exception(x) try_exception(&x) && setjmp(x.env)
+#define catch_exception(x) (try_exception(&x) && setjmp(x.env))
 
 int try_exception(Exception* exception);
 
