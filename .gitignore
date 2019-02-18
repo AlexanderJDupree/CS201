@@ -1,6 +1,7 @@
 demo/
 
 homework/bittool/bittool
+homework/digraph/digraphs
 homework/prtest/prtest
 homework/prtest/tests/obj/debug/run_tests
 
