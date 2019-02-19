@@ -2,12 +2,12 @@
  * File: digraph.h
  *
  * Brief: Digraphs parses_text as a const char* to add weights to the 
- *        corresponding digraphs. For example, if "Hello" was passed to the 
+ *        corresponding digraphs. For example, if "aaabc" was passed to the 
  *        parse_text function the resulting digraphs would be:
- *              He : 1
- *              el : 1
- *              ll : 1
- *              lo : 1
+ *
+ *              aa : 2
+ *              ab : 1
+ *              bc : 1
  *
  *        The for_each function allows the client to read and perform analysis
  *        on the digraphs data.

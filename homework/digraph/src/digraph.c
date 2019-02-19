@@ -17,8 +17,8 @@
 
 static const int MAX_EDGES = 2704;
 static const int ALPHABETIC_CHARACTERS = 52;
-static const char* ALPHABET 
-                       = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
+static const char* ALPHABET = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
+
 typedef struct Edge
 {
     long weight;
@@ -53,8 +53,7 @@ static Edge* construct_edge_list()
 
     if(edge_list == NULL)
     {
-        throw_exception(&standard_exceptions.bad_alloc, 
-                            "construct_edge_list()", -1);
+        throw_exception(&standard_exceptions.bad_alloc, "construct_edge_list()", -1);
     }
 
     for (int i = ALPHABETIC_CHARACTERS - 1; i >= 0; --i)

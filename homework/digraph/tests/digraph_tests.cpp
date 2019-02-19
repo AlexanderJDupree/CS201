@@ -16,7 +16,6 @@ extern "C" {
     #include "exceptions.h"
 }
 
-
 TEST_CASE("Constructing a digraph", "[digraph]")
 {
     Digraph* graph = new_digraph();

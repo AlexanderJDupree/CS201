@@ -144,6 +144,7 @@ void file_analysis(Digraph* graph, const char* file_name)
 
 void directory_analysis(Digraph* graph, const char* directory)
 {
+    // TODO package all this logic into a reusable utility file
     struct dirent* entry = NULL;
     DIR* dir = opendir(directory);
 
