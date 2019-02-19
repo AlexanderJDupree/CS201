@@ -79,6 +79,7 @@ int main(int argc, char** argv)
 void usage()
 {
     fprintf(stderr, "usage:\n  digraphs <options>\nOptions:\n  "
+            "-h or -?\t\tDisplays usage info\n  "
             "-t <path to file>\tPath to file to be analyzed by digraphs\n  "
             "-p <directory>\tPath to directory to be recursively analyzed\n  "
             "-c <integer>\t\tNumber of top digraphs to be displayed\n");

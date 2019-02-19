@@ -8,6 +8,7 @@ Homework 3 - digraph
 usage:
   digraphs <options>
 Options:
+  -h or -?          Displays usage info
   -t <path to file>	Path to file to be analyzed by digraphs
   -p <directory>	Path to directory to be recursively analyzed
   -c <integer>		Number of top digraphs to be displayed
@@ -49,6 +50,35 @@ For command line parsing the getopt library was used, file reading was
 accomplished through the file_reader utility I developed for the last assignment,
 and the directory crawler was compressed into a recursive function.
 
-Below is a sample run of the program:
+Below is a sample run of the program with the provided test.txt and my home directory:
 
+./digraphs -t test.txt -p ~/ -c 10
+
+Analysis of: test.txt
+Alphabetic Characters: 58
+Top 10 Digraphs:
+   th : 2
+   ap : 2
+   ea : 2
+   er : 2
+   in : 2
+   xt : 1
+   ch : 1
+   di : 1
+   ai : 1
+   ac : 1
+
+Analysis of: /home/chaos2022/
+Alphabetic Characters: 3522282
+Top 10 Digraphs:
+   er : 51318
+   es : 44772
+   ng : 43526
+   in : 42499
+   va : 40757
+   ar : 40118
+   ja : 38197
+   on : 37815
+   te : 34800
+   le : 34396
 
