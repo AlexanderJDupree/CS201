@@ -18,6 +18,12 @@ Note:
 	Build Unit tests:  make tests
 	Clean obj files:   make clean
 
+    test1.txt and empty.txt are provided in the tests/ directory for testing
+
+    Build dummy test files/directories first 'cd' into tests/:
+        test dirs: ./test_env.py -d <integer>
+        test file: ./test_env.py -f <file_size> [-n <file_name>]
+
     Run Application: ./digraphs <options>
     Run Unit Tests: ./tests/obj/debug/run_tests
 
@@ -36,25 +42,27 @@ unique digraph combonation. This method provided some benefits, namely fast
 random access. However, displaying the top N digraphs using an adjacency matrix
 was problematic, as the matrix can't be sorted without losing the context of what
 value is associated with which digraph. Therefore, it would be required to loop 
-through the adjacency matrix and build an array of results objects that contain the 
-digraph and its frequency, then the array is sorted, and finally, the top N digraphs
-are displayed. Instead, I opted to construct this results array from the onset to 
-help simplify my code by keeping the digraph and its frequency packaged together. 
-The main drawback of this method was the higher memory overhead, however I found it 
-to be a managable amount for modern machines. This results array, or edge list, was 
-also constructed in such fashion that the indexes for the adjacency matrix would 
-be analagous to those in the edge list. 
+through the adjacency matrix and build an array of results objects that contain 
+the digraph and its frequency, sort the array, then finally the top N digraphs 
+can be displayed. Instead, I opted to construct this results array from the onset 
+to help simplify my code by keeping the digraph and its frequency packaged 
+together. The main drawback of this method was the higher memory overhead, 
+however I found it to be a manageable amount for modern machines. This results 
+array, or edge list, was also constructed in such fashion that the indexes for 
+the adjacency matrix would be analagous to those in the edge list. 
 
-For the other features of the digraphs assignment I used pretty standard solutions.
-For command line parsing the getopt library was used, file reading was
+For the other features required for this assignment I used pretty standard 
+solutions. For command line parsing the getopt library was used, file reading was
 accomplished through the file_reader utility I developed for the last assignment,
-and the directory crawler was compressed into a recursive function.
+and the directory crawler was compressed into a recursive function that simply 
+travles the file system, calling the digraphs parse text function on each entry.
 
-Below is a sample run of the program with the provided test.txt and my home directory:
+Below is a sample run of the program with the provided test1.txt and my home 
+directory:
 
-./digraphs -t test.txt -p ~/ -c 10
+./digraphs -t tests/test1.txt -p ~/
 
-Analysis of: test.txt
+Analysis of: tests/test1.txt
 Alphabetic Characters: 58
 Top 10 Digraphs:
    th : 2

@@ -119,7 +119,7 @@ int run_digraphs(const char* file_name, const char* directory, int n)
         file_analysis(graph, file_name);
         display_analysis(graph, file_name, n);
     }
-    if(directory) // TODO handle invalid directory argument
+    if(directory)
     {
         clear_graph(graph);
         directory_analysis(graph, directory);

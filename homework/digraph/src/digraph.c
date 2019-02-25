@@ -228,7 +228,7 @@ int parse_text(Digraph* self, const char* text)
         int length = strlen(text);
         for (int i = 0; i < length - 1; ++i)
         {
-            if(isalpha(text[i])) // TODO refactor
+            if(isalpha(text[i])) // TODO refactor 
             {
                 ++char_count;
             }
