@@ -156,8 +156,9 @@ extern bucket_t addc_asm_jmp(bucket_t *carry, bucket_t b1, bucket_t b2) {
 #ifdef ADDC_ASM_ADC
 
 /* HW4 Implementation of add with carry */
-extern bucket_t addc_asm_adc(bucket_t *carry, bucket_t b1, bucket_t b2) {
+extern bucket_t addc_asm_adc(bucket_t *carry_in, bucket_t b1, bucket_t b2) {
 
+    /*
     assert(sizeof(bucket_t) == 8);
     bucket_t sum;
     uint8_t cout;
@@ -174,8 +175,27 @@ extern bucket_t addc_asm_adc(bucket_t *carry, bucket_t b1, bucket_t b2) {
         : "cc"
     );
 
-    /* Save output carry and return result. */
     *carry = cout;
+    return sum;
+    */
+    bucket_t sum;
+    uint8_t carry_out = 0;
+    uint8_t carry = *carry_in;
+
+    asm(
+        "xorq	%0, %0\n\t"
+        "xorb	%4, %4\n\t"
+        "cmpb   %1, %4\n\t"
+        "movq	%2, %0\n\t"
+        "adcq	%3, %0\n\t"
+        "setc	%1\n\t"
+        : "=&rm" (sum), "=&rm"(carry)
+        : "rm" (b1), "rm" (b2), "r" (carry_out)
+        : "cc"
+    );
+
+    /* Save output carry and return result. */
+    *carry_in = carry;
     return sum;
 }
 
@@ -184,34 +204,16 @@ extern bucket_t addc_asm_adc(bucket_t *carry, bucket_t b1, bucket_t b2) {
 #ifdef ADDC_C
 
 /* Pure C implementation, works for any bucket size. */
-extern bucket_t addc_c(bucket_t *carry, bucket_t b1, bucket_t b2) {
-    /* Output carry flag value. */
-    bucket_t cflag = 0;
+extern bucket_t addc_c(bucket_t *carry_in, bucket_t b1, bucket_t b2) {
 
-    /* Output sum value. A carry out of sum will cause it to "wrap around",
-       becoming smaller than b1. */
-    bucket_t sum = b1 + *carry;
-    if (sum < b1)
-        cflag = 1;
+    bucket_t sum = b1;
 
-    /* Now add in b2. Again, a carry will cause wrap. */
-    sum += b2;
-    if (sum < b2)
-        cflag = 1;
+    uint8_t carry = (sum += b2) < b2 ? 1 : 0;
 
-#ifdef DEBUG_ADDC
-    /* This tests that the sum and carry are being computed
-       correctly by computing the 64-bit sum and
-       carry. Requires that bucket_t be less than 64 bits to
-       be correct. */
-    assert(sizeof(bucket_t) < sizeof(uint64_t));
-    uint64_t big_sum = b1 + b2 + *carry;
-    assert((bucket_t) big_sum == sum);
-    assert((big_sum >> (8 * sizeof(bucket_t))) == cflag);
-#endif
+    carry = (sum += *carry_in) < carry ? 1 :0;
 
-    /* Save output carry and return result. */
-    *carry = cflag;
+    *carry_in = carry;
+
     return sum;
 }
 
