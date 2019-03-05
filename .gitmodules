@@ -1,0 +1,3 @@
+[submodule "bigfib"]
+	path = bigfib
+	url = git@github.com:BartMassey/bigfib.git
