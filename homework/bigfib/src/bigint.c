@@ -158,11 +158,10 @@ extern bucket_t addc_asm_jmp(bucket_t *carry, bucket_t b1, bucket_t b2) {
 /* HW4 Implementation of add with carry */
 extern bucket_t addc_asm_adc(bucket_t *carry_in, bucket_t b1, bucket_t b2) {
 
-    /*
     assert(sizeof(bucket_t) == 8);
     bucket_t sum;
-    uint8_t cout;
-    uint64_t cin = *carry;
+    uint8_t carry_out;
+    uint64_t carry = *carry_in;
 
     asm(
         "xorq	%0, %0\n\t"
@@ -170,32 +169,12 @@ extern bucket_t addc_asm_adc(bucket_t *carry_in, bucket_t b1, bucket_t b2) {
         "movq	%2, %0\n\t"
         "adcq	%3, %0\n\t"
         "setc	%1\n\t"
-        : "=&rm" (sum), "=&rm"(cout)
-        : "rm" (b1), "rm" (b2), "r" (cin)
+        : "=&rm" (sum), "=&rm"(carry_out)
+        : "rm" (b1), "rm" (b2), "r" (carry)
         : "cc"
     );
 
-    *carry = cout;
-    return sum;
-    */
-    bucket_t sum;
-    uint8_t carry_out = 0;
-    uint8_t carry = *carry_in;
-
-    asm(
-        "xorq	%0, %0\n\t"
-        "xorb	%4, %4\n\t"
-        "cmpb   %1, %4\n\t"
-        "movq	%2, %0\n\t"
-        "adcq	%3, %0\n\t"
-        "setc	%1\n\t"
-        : "=&rm" (sum), "=&rm"(carry)
-        : "rm" (b1), "rm" (b2), "r" (carry_out)
-        : "cc"
-    );
-
-    /* Save output carry and return result. */
-    *carry_in = carry;
+    *carry_in = carry_out;
     return sum;
 }
 
@@ -204,15 +183,15 @@ extern bucket_t addc_asm_adc(bucket_t *carry_in, bucket_t b1, bucket_t b2) {
 #ifdef ADDC_C
 
 /* Pure C implementation, works for any bucket size. */
-extern bucket_t addc_c(bucket_t *carry_in, bucket_t b1, bucket_t b2) {
+extern bucket_t addc_c(bucket_t *carry, bucket_t b1, bucket_t b2) {
 
     bucket_t sum = b1;
 
-    uint8_t carry = (sum += b2) < b2 ? 1 : 0;
+    uint8_t carry_in = (sum += *carry) < b1 ? 1 : 0;
 
-    carry = (sum += *carry_in) < carry ? 1 :0;
+    uint8_t carry_out = (sum += b2) < b2 ? 1 : carry_in;
 
-    *carry_in = carry;
+    *carry = carry_out;
 
     return sum;
 }

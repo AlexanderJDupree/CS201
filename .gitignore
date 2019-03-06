@@ -1,12 +1,15 @@
-demo/
-
 homework/bittool/bittool
 homework/digraph/digraphs
 homework/digraph/tests/obj/debug/run_tests
 homework/prtest/prtest
 homework/prtest/tests/obj/debug/run_tests
 
+*/gmake/
+*/bin/
+
 *.o
 
 *.swp
+
+*.zip
 
