@@ -3,8 +3,8 @@
 -- Author: Alexander DuPree
 
 workspace "bigfib"
-    configurations { "ADDC_C", "ADDC_ASM_JMP", "ADDC_ASM_ADC" }
-    platforms { "debug", "release", "profile" }
+    configurations { "ADDC_ASM_ADC", "ADDC_C", "ADDC_ASM_JMP" }
+    platforms { "release", "debug", "profile" }
 
     if _ACTION == "clean" then
         os.rmdir("bin/")

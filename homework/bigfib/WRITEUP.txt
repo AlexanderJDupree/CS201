@@ -1,0 +1,58 @@
+
+Alexander DuPree
+
+CS201 
+Homework 4 - BigFib
+
+================================= USAGE ========================================
+
+Build Project:
+    
+    cd gmake/ && make
+
+Configurations:
+
+    There are three configurations: debug, release, and profile. Each 
+    configuration also can define which ADDC function it uses. For example, to 
+    build with the addc_asm_jmp function for profiling run:
+
+    make config=addc_asm_jmp_profile
+
+    The generated makefiles are in the gmake/ folder. Run make help for a list 
+    of possible configurations.
+
+Note to Grader:
+
+    My OCD kicked in and I had to reorganize the provided directory structure. 
+    It should be self explanatory but the .c files are in src/ .h in include/ 
+    and executables are in bin/. I also wanted to learn the premake5 build 
+    system, so I incorparated that educational experience into this assignment 
+    as well. Premake5 can generate project files that match your specifications. 
+    So instead of manually editing the Makefile to turn on/off specific flags, I
+    outlined different configurations in the premake5.lua file and had premake5 
+    generate all the requisite Makefiles. I provided these Makefiles in the gmake
+    folder.
+
+Built With:
+
+    Catch2 - CPP unit testing framework
+    https://github.com/catchorg/Catch2
+
+    Premake5 - Build system
+    https://premake.github.io/
+
+================================ WRITEUP =======================================
+
+After reorganzing the project sturcture I ran the instructions outlined in
+README-HW4. First, timing bigfib 100000 with the pure C implementation yielded an 
+average time of about .350 seconds. This was the same for the ADDC_ASM_JMP 
+configuration. Python of course was must faster with an average time of about 
+.198 seconds. After this initial round of research I started to work on the
+assignment of implementing the optimized addc_asm_adc function. Using the 
+structure of the addc_asm_jmp function, I removed the core inline assembly and 
+replaced it with my own inline assembly. After some trial and error, and a lot
+of frustration I was able to produce the correct assembly to perform an add with
+carry and pass all the unit tests. Compiling the bigfib program with the new 
+optimized addc_asm_adc function provided the fastest results yet. Timing bigfib
+100000 took, on average, .08 seconds. 
+

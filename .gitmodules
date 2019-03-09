@@ -1,14 +1,5 @@
-[submodule "bigfib"]
-	path = bigfib
-	url = git@github.com:BartMassey/bigfib.git
-
-[submodule "cs201"]
-	path = cs201
-	url = git@github.com:BartMassey/cs201.git
 
 [submodule "demo"]
 	path = demo
 	url = git@github.com:BartMassey/cs201.git
-[submodule "bigfib_example"]
-	path = bigfib_example
-	url = git@github.com:BartMassey/bigfib.git
+
