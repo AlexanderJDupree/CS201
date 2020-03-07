@@ -1,6 +1,6 @@
-# CS201
+# Systems Programming
 
-Coursework and programs for CS201.
+Coursework and programs for Systems Programming course.
 
 This repo serves multiple purposes: version control and backups for convenience,
 as well as provide for myself a full accounting of my work such that I can revise,
